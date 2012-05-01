@@ -11,8 +11,35 @@ class User < ActiveRecord::Base
   STATUS_REGISTERED = 2
   STATUS_LOCKED     = 3
 
-  attr_accessible :name, :login
 
+  attr_accessible :name, :email, :mail_notification, :status, :last_login_on, :created_on, :updated_on
+
+  attr_accessor  :password, :password_confirmation#, :as => :admin
+  #attr_protected :login, :admin, :password, :password_confirmation, :hashed_password
+
+  validates_presence_of :login, :name
+  validates_uniqueness_of :login, :if => Proc.new { |user| !user.login.blank? }, :case_sensitive => false
+  validates_uniqueness_of :mail, :if => Proc.new { |user| !user.mail.blank? }, :case_sensitive => false
+  # Login must contain lettres, numbers, underscores only
+  validates_format_of :login, :with => /^[a-z0-9_\-@\.]*$/i
+  validates_length_of :login, :maximum => 30
+  validates_format_of :email, :with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i, :allow_nil => true
+  validates_length_of :mail, :maximum => 60, :allow_nil => true
+  validates_confirmation_of :password
+
+  scope :active, where(:status => STATUS_ACTIVE)
+
+  def before_create
+    #self.mail_notification = Setting.default_notification_option if self.mail_notification.blank?
+    true
+  end
+
+  def before_save
+    # update hashed_password if password was set
+    if self.password
+      salt_password(password)
+    end
+  end
 
   def active?
     self.status == STATUS_ACTIVE
@@ -50,13 +77,36 @@ class User < ActiveRecord::Base
     update_attribute(:status, STATUS_LOCKED)
   end
   
+  def self.try_to_login(login, password)
+    # Make sure no one can sign in with an empty password
+    return nil if password.to_s.empty?
+    user = find_by_login(login)
+    if user
+      # user is already in local database
+      return -1 if !user.active?
+      return nil unless user.check_password?(password)
+    end
+
+    user.update_attribute(:last_login_on, Time.now) if user && !user.new_record?
+    user
+  rescue => text
+    raise text
+  end
+
+  # Find a user account by matching the exact login and then a case-insensitive
+  # version.  Exact matches will be given priority.
+  def self.find_by_login(login)
+    # force string comparison to be case sensitive on MySQL
+    type_cast = (Tuge::Database.mysql?) ? 'BINARY' : ''
+    # First look for an exact match
+    user = first(:conditions => ["#{type_cast} login = ?", login])
+    # Fail over to case-insensitive if none was found
+    user ||= first(:conditions => ["#{type_cast} LOWER(login) = ?", login.to_s.downcase])
+  end
+
   # Returns true if +clear_password+ is the correct user's password, otherwise false
   def check_password?(clear_password)
-    if auth_source_id.present?
-      auth_source.authenticate(self.login, clear_password)
-    else
-      User.hash_password("#{salt}#{User.hash_password clear_password}") == hashed_password
-    end
+    User.hash_password("#{salt}#{User.hash_password clear_password}") == hashed_password
   end
 
   # Generates a random salt and computes hashed_password for +clear_password+
@@ -109,6 +159,7 @@ class User < ActiveRecord::Base
     if !password.nil? && password.size < Setting.password_min_length.to_i
       errors.add(:password, :too_short, :count => Setting.password_min_length.to_i)
     end
+    super
   end
 
   private
