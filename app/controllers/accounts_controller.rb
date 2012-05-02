@@ -4,10 +4,14 @@ class AccountsController < ApplicationController
 
 	def register
 		@user = User.new
-    respond_to do |format|
-      format.html # index.html.erb
-      format.json { render json: @user }
-    end
+	    respond_to do |format|
+	      format.html # index.html.erb
+	      format.json { render json: @user }
+	    end
+	end
+
+	def create
+		"hello"
 	end
 
 	def login

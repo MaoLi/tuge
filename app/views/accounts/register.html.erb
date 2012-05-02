@@ -1,2 +1,58 @@
-<div>
-</div>
+<div id="login-wrapper" class="png_bg">
+	<div id="login-top">
+			
+		<h1><%=Tuge.name%></h1>
+		<!-- Logo (221px width) -->
+		<img id="logo" src="/images/logo.png" alt="Simpla Admin logo" />
+	</div> <!-- End #logn-top -->
+			
+	<div id="login-content">
+
+		<%= form_for @user, :as => :post, :url => {:controller => :accounts, :action => :create} do |f| %>
+		  <% if @user.errors.any? %>
+		    <div id="error_explanation">
+		      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
+
+		      <ul>
+		      <% @user.errors.full_messages.each do |msg| %>
+		        <li><%= msg %></li>
+		      <% end %>
+		      </ul>
+		    </div>
+		  <% end %>
+			
+			<!-- div class="notification information png_bg">
+				<div>
+					Just click "Sign In". No password needed.
+				</div>
+			</div -->
+			<p>
+				<%= f.label :name %>
+				<%= f.text_field :name %>
+			</p>
+			<div class="clear"></div>
+			<p>
+				<%= f.label :password %>
+				<%= password_field :user, :password, :size => 25 %>
+			</p>
+			<div class="clear"></div>
+            <p>
+				<%= f.label :password_confirmation %>
+				<%= password_field :user, :password_confirmation, :size => 25 %>
+			</p>
+			<div class="clear"></div>
+            <p>
+				<%= f.label :email %>
+				<%= f.text_field :email %>
+			</p>
+			<div class="clear"></div>
+			<p id="remember-password">
+				<input type="checkbox" />同意条款
+			</p>
+			<div class="clear"></div>
+			<p>
+				<%= f.submit :class => 'button', :value => 'register'%>
+			</p>
+		<%end%>
+			</div> <!-- End #login-content -->
+</div> 
