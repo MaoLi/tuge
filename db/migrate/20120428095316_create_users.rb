@@ -13,8 +13,8 @@ class CreateUsers < ActiveRecord::Migration
       t.column "last_login_on",     :datetime
       t.column "language",          :string, :limit => 2, :default => ""
 
-      t.column "created_on",        :timestamp
-      t.column "updated_on",        :timestamp
+      #t.column "created_on",        :timestamp
+      #t.column "updated_on",        :timestamp
 
       t.string "salt",              :limit => 64
 

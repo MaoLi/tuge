@@ -12,19 +12,19 @@ class User < ActiveRecord::Base
   STATUS_LOCKED     = 3
 
 
-  attr_accessible :name, :email, :mail_notification, :status, :last_login_on, :created_on, :updated_on
+  attr_accessible :name, :email, :mail_notification, :status, :last_login_on, :created_on, :updated_on, :password, :password_confirmation
 
   attr_accessor  :password, :password_confirmation#, :as => :admin
   #attr_protected :login, :admin, :password, :password_confirmation, :hashed_password
 
   validates_presence_of :login, :name
   validates_uniqueness_of :login, :if => Proc.new { |user| !user.login.blank? }, :case_sensitive => false
-  validates_uniqueness_of :mail, :if => Proc.new { |user| !user.mail.blank? }, :case_sensitive => false
+  validates_uniqueness_of :email, :if => Proc.new { |user| !user.email.blank? }, :case_sensitive => false
   # Login must contain lettres, numbers, underscores only
   validates_format_of :login, :with => /^[a-z0-9_\-@\.]*$/i
   validates_length_of :login, :maximum => 30
   validates_format_of :email, :with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i, :allow_nil => true
-  validates_length_of :mail, :maximum => 60, :allow_nil => true
+  validates_length_of :email, :maximum => 60, :allow_nil => true
   validates_confirmation_of :password
 
   scope :active, where(:status => STATUS_ACTIVE)

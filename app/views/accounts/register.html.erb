@@ -8,7 +8,7 @@
 			
 	<div id="login-content">
 
-		<%= form_for @user, :as => :post, :url => {:controller => :accounts, :action => :create} do |f| %>
+		<%= form_for @user, :as => :user, :url => {:controller => :accounts, :action => :register} do |f| %>
 		  <% if @user.errors.any? %>
 		    <div id="error_explanation">
 		      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
