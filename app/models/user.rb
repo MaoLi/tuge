@@ -12,9 +12,10 @@ class User < ActiveRecord::Base
   STATUS_LOCKED     = 3
 
 
-  attr_accessible :name, :email, :mail_notification, :status, :last_login_on, :created_on, :updated_on, :password, :password_confirmation
+  attr_accessible :login, :name, :email, :mail_notification, :status, :last_login_on, :created_on, :updated_on, :password, :password_confirmation
 
   attr_accessor  :password, :password_confirmation#, :as => :admin
+  attr_protected :hashed_password
   #attr_protected :login, :admin, :password, :password_confirmation, :hashed_password
 
   validates_presence_of :login, :name
@@ -23,21 +24,22 @@ class User < ActiveRecord::Base
   # Login must contain lettres, numbers, underscores only
   validates_format_of :login, :with => /^[a-z0-9_\-@\.]*$/i
   validates_length_of :login, :maximum => 30
+  validates_length_of :password, :minimum => 6
   validates_format_of :email, :with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i, :allow_nil => true
   validates_length_of :email, :maximum => 60, :allow_nil => true
   validates_confirmation_of :password
 
   scope :active, where(:status => STATUS_ACTIVE)
 
-  def before_create
+  before_create do |user|
     #self.mail_notification = Setting.default_notification_option if self.mail_notification.blank?
     true
   end
 
-  def before_save
+  before_save do |user|
     # update hashed_password if password was set
-    if self.password
-      salt_password(password)
+    if user.password
+      user.salt_password(user.password)
     end
   end
 
@@ -114,6 +116,8 @@ class User < ActiveRecord::Base
   def salt_password(clear_password)
     self.salt = User.generate_salt
     self.hashed_password = User.hash_password("#{salt}#{User.hash_password clear_password}")
+
+    p "hashed password==", self.hashed_password
   end
   # Generate and set a random password.  Useful for automated user creation
   # Based on Token#generate_token_value
@@ -171,7 +175,7 @@ class User < ActiveRecord::Base
 
   # Returns a 128bits random salt as a hex string (32 chars long)
   def self.generate_salt
-    ActiveSupport::SecureRandom.hex(16)
+    SecureRandom.base64(15)
   end
 
 end

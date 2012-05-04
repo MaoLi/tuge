@@ -9,7 +9,7 @@ class CreateUsers < ActiveRecord::Migration
       t.column "email",             :string, :limit => 60, :default => "", :null => false
       t.column "mail_notification", :boolean, :default => false, :null => false
       t.column "admin",             :boolean, :default => false, :null => false
-      t.column "status",            :integer, :default => 1, :null => false
+      t.column "status",            :integer, :default => 2, :null => false
       t.column "last_login_on",     :datetime
       t.column "language",          :string, :limit => 2, :default => ""
 
