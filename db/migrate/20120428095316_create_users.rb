@@ -6,7 +6,7 @@ class CreateUsers < ActiveRecord::Migration
       t.column "login",             :string, :limit => 30, :default => "", :null => false
       t.column "hashed_password",   :string, :limit => 40, :default => "", :null => false
 
-      t.column "email",             :string, :limit => 60, :default => "", :null => false
+      #t.column "email",             :string, :limit => 60, :default => "", :null => false
       t.column "mail_notification", :boolean, :default => false, :null => false
       t.column "admin",             :boolean, :default => false, :null => false
       t.column "status",            :integer, :default => 2, :null => false

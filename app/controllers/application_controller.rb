@@ -19,17 +19,6 @@ class ApplicationController < ActionController::Base
     false
   end
 
-	def logged_in?
-	  current_user != :false
-	end
 
-	def current_user
-	  @current_user ||= (login_from_session || login_from_basic_auth || login_from_cookie || :false)
-	end
-
-	def current_user=(new_user)
-	  session[:user] = (new_user.nil? || new_user.is_a?(Symbol)) ? nil : new_user.id
-	  @current_user = new_user
-	end
-
+  
 end
