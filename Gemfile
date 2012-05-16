@@ -39,3 +39,4 @@ gem 'jquery-rails'
 #
 gem 'rails_admin'
 gem "devise"
+gem "cancan", '>= 1.5.0'
