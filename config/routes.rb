@@ -1,11 +1,13 @@
 Tuge::Application.routes.draw do
   mount RailsAdmin::Engine => '/admin', :as => 'rails_admin'
 
-  devise_for :users
+  devise_for :users, :path => '/', :path_names => { :sign_in => 'login', :sign_out => 'logout', :password => 'secret', :confirmation => 'verification', :unlock => 'unblock', :registration => 'register', :sign_up => 'new' }
 
-  
+  #devise_scope :user do
+  #  get "loginin", :to => "devise/sessions#new"
+  #end
 
-  resources :users
+  #resources :users
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

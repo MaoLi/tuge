@@ -12,10 +12,10 @@
   <%= devise_error_messages! %>
 
   <div><p><%= f.label :login %>
-  <%= f.email_field :login %></p></div>
+  <%= f.text_field :login %></p></div>
 
   <div><p><%= f.label :name %>
-  <%= f.email_field :name %></p></div>
+  <%= f.text_field :name %></p></div>
 
   <div><p><%= f.label :email %>
   <%= f.email_field :email %></p></div>
@@ -27,7 +27,7 @@
   <%= f.password_field :password_confirmation %></p></div>
 
   <div><%= f.submit :class => 'button', :value => 'register' %></div>
-  <%= render "links" %>
+
 <% end %>
 
 </div>
